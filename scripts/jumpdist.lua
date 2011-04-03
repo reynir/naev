@@ -1,4 +1,4 @@
-
+include("scripts/queue.lua")
 
 --[[
 -- @brief Fetches an array of systems from min to max jumps away from the given
@@ -32,51 +32,38 @@
 --    @return The table of systems n jumps away from sys
 --]]
 function getsysatdistance( sys, min, max, filter, data )
-   -- Get default parameters
-   if sys == nil then
-      sys = system.cur()
-   end
-   if max == nil then
-      max = min
-   end
-   -- Begin iteration
-   return _getsysatdistance( sys, min, max, sys, max, {}, filter, data )
+    -- Get default parameters
+    if sys == nil then
+        sys = system.cur()
+    end
+    if max == nil then
+        max = min
+    end
+
+    local res = {}
+    local pending = 1
+    local visited = 2
+    
+    local d = { sys:name() = 0 }
+    local sysstate = { sys:name() = pending }
+    local q = Queue.new()
+    q:enqueue(sys)
+    
+    while not q.isEmpty() do
+        local cur = q:dequeue()
+
+        for _, i in pairs( cur:adjacentSystems() ) do
+            if sysstate[i:name()] == nil then
+                q:enqueue(i)
+                d[i:name()] = d[cur] + 1
+                sysstate[i:name()] = pending
+            end
+        end
+        if d[cur] >= min and d[cur] <= max and not filter(sys, data) then
+            res[#res+1] = cur
+        end
+        sysstate[cur:name()] = visited
+    end
+
+    return res
 end
-
-
--- The first call to this function should always have n >= max
-function _getsysatdistance( target, min, max, sys, n, t, filter, data )
-   if n == 0 then -- This is a leaf call - perform checks and add if appropriate
-      local d = target:jumpDist(sys)
-
-      -- Check bounds
-      if d < min or d > max then
-         return t
-      end
-
-      -- Case filter function is available
-      if filter ~= nil and not filter(sys, data) then
-         return t
-      end
-
-      -- Add to table
-      local seen = false
-      for _,i in ipairs(t) do -- Check if the system is already in our array
-         if i == sys then
-            seen = true
-            break
-         end
-      end
-      if not seen then -- Don't add a system we've already tagged.
-         t[#t+1] = sys
-      end
-      return t
-   else -- This is a branch call - recursively call over all adjacent systems
-      for _,i in pairs( sys:adjacentSystems() ) do
-         t = _getsysatdistance(target, min, max, i, n-1, t, filter, data)
-      end
-      return t
-   end
-end
-
-
