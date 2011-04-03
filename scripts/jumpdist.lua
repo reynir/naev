@@ -44,22 +44,25 @@ function getsysatdistance( sys, min, max, filter, data )
     local pending = 1
     local visited = 2
     
-    local d = { sys:name() = 0 }
-    local sysstate = { sys:name() = pending }
+    local d = {}
+    d[sys:name()] = 0
+    local sysstate = {}
+    sysstate[sys:name()] = pending
     local q = Queue.new()
     q:enqueue(sys)
     
-    while not q.isEmpty() do
+    while not q:isEmpty() do
         local cur = q:dequeue()
 
         for _, i in pairs( cur:adjacentSystems() ) do
             if sysstate[i:name()] == nil then
                 q:enqueue(i)
-                d[i:name()] = d[cur] + 1
+                d[i:name()] = d[cur:name()] + 1
                 sysstate[i:name()] = pending
             end
         end
-        if d[cur] >= min and d[cur] <= max and not filter(sys, data) then
+        if d[cur] ~= nil and d[cur] >= min and d[cur] <= max 
+                and not filter(sys, data) then
             res[#res+1] = cur
         end
         sysstate[cur:name()] = visited
