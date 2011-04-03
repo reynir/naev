@@ -46,7 +46,6 @@ function getsysatdistance( sys, min, max, filter, data )
 
     local d = {}
     d[sys:name()] = 0
-    print("Set d["..sys:name().."] to zero.")
     local sysstate = {}
     sysstate[sys:name()] = pending
     local q = Queue.new()
@@ -62,10 +61,10 @@ function getsysatdistance( sys, min, max, filter, data )
                 sysstate[i:name()] = pending
             end
         end
-        if d[cur] ~= nil and d[cur] >= min and d[cur] <= max 
-            and (filter == nil or not filter(sys, data)) then
+        if d[cur:name()] ~= nil and d[cur:name()] >= min and d[cur:name()] <= max 
+            and (filter == nil or not filter(cur, data)) then
             res[#res+1] = cur
-        elseif d[cur] == nil then
+        elseif d[cur:name()] == nil then
             error("d[" .. cur:name() .. "] is nil!")
         end
         sysstate[cur:name()] = visited
