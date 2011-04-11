@@ -154,36 +154,6 @@
    <pilot name="FLF Lancelot" ship="Lancelot"></pilot>
   </pilots>
  </fleet>
- <fleet name="FLF Vendetta Trio">
-  <ai>flf</ai>
-  <faction>FLF</faction>
-  <pilots>
-   <pilot name="FLF Vendetta" ship="Vendetta"></pilot>
-   <pilot name="FLF Vendetta" ship="Vendetta"></pilot>
-   <pilot name="FLF Vendetta" ship="Vendetta"></pilot>
-  </pilots>
- </fleet>
- <fleet name="FLF Vendetta Sextet">
-  <ai>flf</ai>
-  <faction>FLF</faction>
-  <pilots>
-   <pilot name="FLF Vendetta" ship="Vendetta"></pilot>
-   <pilot name="FLF Vendetta" ship="Vendetta"></pilot>
-   <pilot name="FLF Vendetta" ship="Vendetta"></pilot>
-   <pilot name="FLF Vendetta" ship="Vendetta"></pilot>
-   <pilot name="FLF Vendetta" ship="Vendetta"></pilot>
-   <pilot name="FLF Vendetta" ship="Vendetta"></pilot>
-  </pilots>
- </fleet>
- <fleet name="FLF Ancestor Trio">
-  <ai>flf</ai>
-  <faction>FLF</faction>
-  <pilots>
-   <pilot name="FLF Ancestor" ship="Ancestor"></pilot>
-   <pilot name="FLF Ancestor" ship="Ancestor"></pilot>
-   <pilot name="FLF Ancestor" ship="Ancestor"></pilot>
-  </pilots>
- </fleet>
  <fleet name="Pirate Hyena">
   <ai>pirate</ai>
   <faction>Pirate</faction>
@@ -483,49 +453,24 @@
   </pilots>
  </fleet>
  <fleet name="Mercenary Pacifier">
-  <ai>generic</ai>
+  <ai>mercenary</ai>
   <faction>Mercenary</faction>
   <pilots>
    <pilot name="Mercenary Pacifier" ship="Pacifier"></pilot>
   </pilots>
  </fleet>
  <fleet name="Mercenary Ancestor">
-  <ai>generic</ai>
+  <ai>mercenary</ai>
   <faction>Mercenary</faction>
   <pilots>
    <pilot name="Mercenary Ancestor" ship="Ancestor"></pilot>
   </pilots>
  </fleet>
  <fleet name="Mercenary Vendetta">
-  <ai>generic</ai>
+  <ai>mercenary</ai>
   <faction>Mercenary</faction>
   <pilots>
    <pilot name="Mercenary Vendetta" ship="Vendetta"></pilot>
-  </pilots>
- </fleet>
- <fleet name="Mercenary Wing 1">
-  <ai>generic</ai>
-  <faction>Mercenary</faction>
-  <pilots>
-   <pilot name="Mercenary Hyena" ship="Hyena"></pilot>
-   <pilot name="Mercenary Hyena" ship="Hyena"></pilot>
-  </pilots>
- </fleet>
- <fleet name="Mercenary Wing 2">
-  <ai>generic</ai>
-  <faction>Mercenary</faction>
-  <pilots>
-   <pilot name="Mercenary Hyena" ship="Hyena"></pilot>
-   <pilot name="Mercenary Vendetta" ship="Vendetta"></pilot>
-  </pilots>
- </fleet>
- <fleet name="Mercenary Wing 3">
-  <ai>generic</ai>
-  <faction>Mercenary</faction>
-  <pilots>
-   <pilot name="Mercenary Llama" ship="Llama"></pilot>
-   <pilot name="Mercenary Llama" ship="Llama"></pilot>
-   <pilot name="Mercenary Llama" ship="Llama"></pilot>
   </pilots>
  </fleet>
  <fleet name="DTS Raiders">
@@ -581,34 +526,6 @@
    <pilot name="Independent Vendetta" ship="Vendetta"></pilot>
    <pilot name="Independent Vendetta" ship="Vendetta"></pilot>
    <pilot name="Independent Vendetta" ship="Vendetta"></pilot>
-  </pilots>
- </fleet>
- <fleet name="crimelord Thugs">
-  <ai>baddie</ai>
-  <faction>Thugs</faction>
-  <pilots>
-   <pilot name="Thug" ship="Admonisher"></pilot>
-   <pilot name="Thug" ship="Admonisher"></pilot>
-   <pilot name="Thug" ship="Admonisher"></pilot>
-   <pilot name="Thug" ship="Admonisher"></pilot>
-  </pilots>
- </fleet>
- <fleet name="crimelord Associate">
-  <ai>dvaered</ai>
-  <faction>Associates</faction>
-  <pilots>
-   <pilot name="Associate Pacifier" ship="Pacifier"></pilot>
-   <pilot name="Associate Lancelot" ship="Lancelot"></pilot>
-   <pilot name="Associate Lancelot" ship="Lancelot"></pilot>
-   <pilot name="Associate Admonisher" ship="Admonisher"></pilot>
-   <pilot name="Associate Hawking" ship="Hawking"></pilot>
-  </pilots>
- </fleet>
- <fleet name="crimelord Kestrel">
-  <ai>dvaered</ai>
-  <faction>Associates</faction>
-  <pilots>
-   <pilot name="Associate Kestrel" ship="Kestrel"></pilot>
   </pilots>
  </fleet>
  <fleet name="Four Winds Vendetta">

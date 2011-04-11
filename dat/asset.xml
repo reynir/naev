@@ -1062,6 +1062,28 @@
    <bar>(null)</bar>
   </general>
  </asset>
+ <asset name="Basel I">
+  <pos>
+   <x>-1001.400659</x>
+   <y>-860.838607</y>
+  </pos>
+  <GFX>
+   <space>moon-A00.png</space>
+   <exterior>forest.png</exterior>
+  </GFX>
+  <presence>
+   <value>0.000000</value>
+   <range>0</range>
+  </presence>
+  <general>
+   <class>A</class>
+   <population>0</population>
+   <services/>
+   <commodities/>
+   <description>(null)</description>
+   <bar>(null)</bar>
+  </general>
+ </asset>
  <asset name="Beeklo II">
   <pos>
    <x>-924.000000</x>
@@ -10631,6 +10653,28 @@ New Dortmund was never very successful in any sense of the term, but it is still
    <item>All Ships</item>
   </tech>
  </asset>
+ <asset name="Sorom">
+  <pos>
+   <x>6493.152426</x>
+   <y>-3596.974838</y>
+  </pos>
+  <GFX>
+   <space>A02.png</space>
+   <exterior>aquatic2.png</exterior>
+  </GFX>
+  <presence>
+   <value>0.000000</value>
+   <range>0</range>
+  </presence>
+  <general>
+   <class>A</class>
+   <population>0</population>
+   <services/>
+   <commodities/>
+   <description>(null)</description>
+   <bar>(null)</bar>
+  </general>
+ </asset>
  <asset name="Sroolu">
   <pos>
    <x>4159.837315</x>
@@ -12975,7 +13019,7 @@ New Dortmund was never very successful in any sense of the term, but it is still
     <commodity>Industrial Goods</commodity>
    </commodities>
    <description>Most of Zeo's inhabitation is recently new. After the Incident, real estate prices had a major overhaul all across the galaxy, and the once neglected backwater world of Zeo quickly became prime land to settle for Imperial citizens. Though the population is still on the low side compared to older civilian worlds, the number of people living here rises by the day.</description>
-   <bar>Because of Zeo's abrupt rise in value after the Incident, the antiquated facilities at the time had to be replaced to handle the influx of Imperial colonist. As a result, most of the infrastructure here is relatively modern. You won't find anything out of order or slow to respond in this bar.</bar>
+   <bar>Because of Zeo's abrupt rise in value after the Incident, the antiquated facilities at the time had to be replaced to handle the influx of Imperial colonists. As a result, most of the infrastructure here is relatively modern. You won't find anything out of order or slow to respond in this bar.</bar>
   </general>
   <tech>
    <item>Laser 1</item>

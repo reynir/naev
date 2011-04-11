@@ -1,4 +1,3 @@
-
 -- Find an inhabited planet 0-3 jumps away.
 function cargo_selectMissionDistance ()
     local seed = rnd.rnd()
@@ -105,3 +104,24 @@ function getNextSystem(nowsys, finalsys)
 end 
 
 
+-- Construct the cargo mission description text
+function buildCargoMissionDescription( priority, amount, ctype, destplanet, destsys )
+    str = "Shipment to %s"
+    if priority ~= nil then
+        str = priority .. " transport to %s"
+    end
+    if system.cur() ~= destsys then
+        str = string.format( "%s in %s", str, destsys:name() )
+    end
+    return string.format( "%s (%s tonnes)", str:format( destplanet:name()), amount )
+end
+
+
+-- Calculates the minimum possible time taken for the player to reach a destination.
+function cargoGetTransit( timelimit, numjumps, traveldist )
+    local pstats   = player.pilot():stats()
+    local stuperpx = 1 / player.pilot():stats().speed_max * 30
+    local arrivalt = time.get() + time.create(0, 0, traveldist * stuperpx +
+            numjumps * pstats.jump_delay + 10180 )
+    return arrivalt
+end

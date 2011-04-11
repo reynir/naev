@@ -3,6 +3,8 @@
 --]]
 
 -- localization stuff, translators would work here
+include("scripts/fleethelper.lua")
+
 lang = naev.lang()
 if lang == "es" then
 else -- default english
@@ -13,7 +15,7 @@ else -- default english
     
     title[1] = "His Baronship remembers you"
     text[1] = [[    As you approach the stranger, he extends his hand in greeting. He introduces himself as an associate of Baron Sauterfeldt, the man you helped "acquire" a holopainting not too long ago.
-    "The Baron was quite pleased with your performance in that matter," he confides. "He has asked me to try to find you again for another job not unlike the last one. The Baron is a collector, you see, and his hunger for new possessions is a hard one to satiate." He makes a face. "Of course, his methods aren't always completely respectable, as you've experience for yourself. But I assure you that the Baron is not a bad man, he is simply very enthusiastic."
+    "The Baron was quite pleased with your performance in that matter," he confides. "He has asked me to try to find you again for another job not unlike the last one. The Baron is a collector, you see, and his hunger for new possessions is a hard one to satiate." He makes a face. "Of course, his methods aren't always completely respectable, as you've experienced for yourself. But I assure you that the Baron is not a bad man, he is simply very enthusiastic."
     You decide to keep your opinion of the fat aristocrat to yourself. Instead you inquire as to what the man wants from you this time. "To tell the truth, I don't actually know," the man says. "The Baron wants you to meet him so he can brief you in person. You will find his ship in the %s system. Shall I inform his lordship that you will be paying him a visit?"]]
 
     refusetitle = "Sorry, not today"
@@ -94,7 +96,7 @@ else -- default english
     npc_desc = "An unfamiliar man"
     bar_desc = "A man you've never seen before makes eye contact with you. It seems he knows who you are."
     
-    flint_npc1 = "A reedy looking man"
+    flint_npc1 = "A reedy-looking man"
     flint_bar1 = "You spot a thin, nervous looking individual. He does not seem to want to be here. This could be that Flintley fellow the Baron told you about."
     
     flint_npc2 = "Flintley"
@@ -136,6 +138,7 @@ function accept()
     reward = 200000 -- The price of each artefact will always be 15% of this, so at most the player will be paid 85% and at least 55%.
     
     if tk.yesno(title[1], text[1]:format(baronsys:name())) then
+        misn.accept()
         tk.msg(title[2], text[2]:format(baronsys:name()))
 
         misn.setTitle(misn_title)
@@ -144,7 +147,6 @@ function accept()
         misn.osdCreate(misn_title, { osd_msg[1]:format(baronsys:name()),
                                    })
         marker = misn.markerAdd(baronsys, "low")
-        misn.accept()
         var.push("baron_active", true)
         
         enterhook = hook.enter("enter")
@@ -195,11 +197,11 @@ function board()
 end
 
 function land()
-    if planet.cur() == artefactplanetA then
+    if planet.cur() == artefactplanetA and not artefactA then
         sellnpc = misn.npcAdd("seller", "Artefact seller", "thief1", sellerdesc, 4)
-    elseif planet.cur() == artefactplanetB then
+    elseif planet.cur() == artefactplanetB and not artefactB then
         sellnpc = misn.npcAdd("seller", "Artefact seller", "thief2", sellerdesc, 4)
-    elseif planet.cur() == artefactplanetC then
+    elseif planet.cur() == artefactplanetC and not artefactC then
         sellnpc = misn.npcAdd("seller", "Artefact seller", "thief3", sellerdesc, 4)
     elseif planet.cur() == flintplanet then
         if flintleyfirst then
@@ -260,7 +262,7 @@ function flintley()
         misn.osdActive(3)
         stage = 3
         
-        misn.cargoAdd("Ancient Artefact", 0)
+        artefactReal = misn.cargoAdd("Ancient Artefact", 0)
         
         misn.markerRm(markerA)
         misn.markerRm(markerB)
@@ -309,8 +311,7 @@ end
 
 function enter()
     if system.cur() == baronsys then
-        pinnacle = pilot.add("Proteron Kahan", "trader", planet.get("Ulios"):pos() + vec2.new(-400,-400))[1]
-        pinnacle:setFaction("Civilian")
+        pinnacle = pilot.addRaw("Proteron Kahan", "trader", planet.get("Ulios"):pos() + vec2.new(-400,-400), "Civilian" )[1]
         pinnacle:rename("Pinnacle")
         pinnacle:setInvincible(true)
         pinnacle:setFriendly()
@@ -318,25 +319,26 @@ function enter()
         pinnacle:setHilight(true)
         pinnacle:goto(planet.get("Ulios"):pos() + vec2.new( 500, -500), false, false)
         idlehook = hook.pilot(pinnacle, "idle", "idle")
-        hook.pilot(pinnacle, "hail", "hail")
-    elseif artefactA ~= nil or artefactB ~= nil or artefactC ~= nil then
+        hhail = hook.pilot(pinnacle, "hail", "hail")
+    elseif artefactA ~= nil or artefactB ~= nil or artefactC ~= nil or artefactReal ~= nil then
         -- Spawn artefact hunters, maybe.
         local choice = rnd.rnd(1, 5)
         local fleep
-        if choice == 1 then
-            fleep = pilot.add("Mercenary Wing 1", "baddie", true)
-        elseif choice == 2 then
-            fleep = pilot.add("Mercenary Wing 2", "baddie", true)
+        local count
+        local pilots = { "Hyena", "Hyena" }
+
+        if choice == 2 then -- 60% chance of artefact hunters.
+            pilots[2] = "Vendetta"
         elseif choice == 3 then
-            fleep = pilot.add("Mercenary Wing 3", "baddie", true)
-        else
-            fleep = {}
+            pilots = { "Llama" }
+            count = 3
         end
-        for i, j in ipairs(fleep) do
-            if j:exists() then
+        if choice <= 3 then
+            fleep = addRawShips( pilots, "mercenary", nil, "Mercenary", count );
+            for i, j in ipairs(fleep) do
                 j:control()
                 j:setHostile(true)
-                j:rename("Artefact hunter")
+                j:rename("Artefact Hunter")
                 j:attack(player.pilot())
             end
         end
@@ -357,6 +359,7 @@ function hail()
     pinnacle:setActiveBoard(true)
     boardhook = hook.pilot(pinnacle, "board", "board")
     hook.rm(idlehook)
+    hook.rm(hhail)
 end
 
 -- Function that tries to misspell whatever string is passed to it.

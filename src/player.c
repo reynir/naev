@@ -1614,6 +1614,7 @@ void player_brokeHyperspace (void)
    /* stop hyperspace */
    pilot_rmFlag( player.p, PILOT_HYPERSPACE );
    pilot_rmFlag( player.p, PILOT_HYP_BEGIN );
+   pilot_rmFlag( player.p, PILOT_HYP_BRAKE );
    pilot_rmFlag( player.p, PILOT_HYP_PREP );
 
    /* update the map */
@@ -2258,6 +2259,11 @@ int player_outfitOwned( const Outfit* o )
          player_hasLicense(o->name))
       return 1;
 
+   /* Special case GUI. */
+   if (outfit_isGUI(o) &&
+         player_guiCheck(o->u.gui.gui))
+      return 1;
+
    /* Try to find it. */
    for (i=0; i<player_noutfits; i++) {
       if (player_outfits[i].o == o) {
@@ -2876,6 +2882,7 @@ static int player_saveShip( xmlTextWriterPtr writer,
             xmlw_attr(writer,"name","%s",name);
          xmlw_attr(writer,"id","%d",i);
          xmlw_attr(writer,"fire","%d",pilot_weapSetModeCheck(ship,i));
+         xmlw_attr(writer,"inrange","%d",pilot_weapSetInrangeCheck(ship,i));
          for (j=0; j<n;j++) {
             xmlw_startElem(writer,"weapon");
             xmlw_attr(writer,"level","%d",weaps[j].level);
@@ -3335,7 +3342,7 @@ static int player_parseShip( xmlNodePtr parent, int is_player, char *planet )
    Commodity *com;
    PilotFlags flags;
    unsigned int pid;
-   int autoweap, fire, level, weapid;
+   int autoweap, level, weapid;
 
    xmlr_attr(parent,"name",name);
    xmlr_attr(parent,"model",model);
@@ -3540,10 +3547,18 @@ static int player_parseShip( xmlNodePtr parent, int is_player, char *planet )
             WARN("Player ship '%s' missing 'fire' tag for weapon set.",ship->name);
             continue;
          }
-         fire = atoi(id);
-         if (fire)
-            pilot_weapSetMode( ship, i, fire );
+         pilot_weapSetMode( ship, i, atoi(id) );
          free(id);
+
+         /* Set inrange mode. */
+         xmlr_attr(cur,"inrange",id);
+         if (id == NULL) {
+            pilot_weapSetInrange( ship, i, 1 );
+         }
+         else {
+            pilot_weapSetInrange( ship, i, atoi(id) );
+            free(id);
+         }
 
          /* Get name. */
          xmlr_attr(cur,"name",id);
@@ -3595,6 +3610,8 @@ static int player_parseShip( xmlNodePtr parent, int is_player, char *planet )
    ship->autoweap = autoweap;
    if (autoweap)
       pilot_weaponAuto( ship );
+   pilot_weaponSane( ship );
+   pilot_weaponSetDefault( ship );
 
    return 0;
 }

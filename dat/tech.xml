@@ -392,6 +392,7 @@
  <tech name="Light Civilian Combat Ships">
   <item>Ancestor</item>
   <item>Hyena</item>
+  <item>Shark</item>
   <item>Vendetta</item>
  </tech>
  <tech name="Heavy Civilian Combat Ships">
@@ -400,6 +401,7 @@
   <item>Lancelot</item>
   <item>Pacifier</item>
   <item>Vigilance</item>
+  <item>Kestrel</item>
  </tech>
  <tech name="Goddard Ship">
   <item>Goddard</item>

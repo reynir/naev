@@ -80,6 +80,7 @@ static void weapons_update( unsigned int wid, char *str );
 static void weapons_rename( unsigned int wid, char *str );
 static void weapons_autoweap( unsigned int wid, char *str );
 static void weapons_fire( unsigned int wid, char *str );
+static void weapons_inrange( unsigned int wid, char *str );
 static void weapons_renderLegend( double bx, double by, double bw, double bh, void* data );
 static void info_openStandings( unsigned int wid );
 static void standings_update( unsigned int wid, char* str );
@@ -338,11 +339,14 @@ static void info_openWeapons( unsigned int wid )
          "btnRename", "Rename", weapons_rename );
 
    /* Checkboxes. */
-   window_addCheckbox( wid, -20, 20+2*(BUTTON_HEIGHT+20), 250, BUTTON_HEIGHT,
+   window_addCheckbox( wid, 220, 20+2*(BUTTON_HEIGHT+20)-40, 250, BUTTON_HEIGHT,
          "chkAutoweap", "Automatically handle weapons", weapons_autoweap, player.p->autoweap );
-   window_addCheckbox( wid, -20, 20+2*(BUTTON_HEIGHT+20)+BUTTON_HEIGHT, 300, BUTTON_HEIGHT,
+   window_addCheckbox( wid, 220, 20+2*(BUTTON_HEIGHT+20)-10, 300, BUTTON_HEIGHT,
          "chkFire", "Enable fire mode (fires when activated)", weapons_fire,
          pilot_weapSetModeCheck( player.p, info_eq_weaps.weapons ) );
+   window_addCheckbox( wid, 220, 20+2*(BUTTON_HEIGHT+20)+20, 300, BUTTON_HEIGHT,
+         "chkInrange", "Only shoot weapons that are in range", weapons_inrange,
+         pilot_weapSetInrangeCheck( player.p, info_eq_weaps.weapons ) );
 
    /* Custom widget. */
    equipment_slotWidget( wid, 20, -40, 180, h-60, &info_eq_weaps );
@@ -413,6 +417,10 @@ static void weapons_update( unsigned int wid, char *str )
    window_checkboxSet( wid, "chkFire",
          pilot_weapSetModeCheck( player.p, pos ) );
 
+   /* Update inrange. */
+   window_checkboxSet( wid, "chkInrange",
+         pilot_weapSetInrangeCheck( player.p, pos ) );
+
    /* Update autoweap. */
    window_checkboxSet( wid, "chkAutoweap", player.p->autoweap );
 }
@@ -480,11 +488,39 @@ static void weapons_autoweap( unsigned int wid, char *str )
  */
 static void weapons_fire( unsigned int wid, char *str )
 {
-   int state;
+   int i, state;
 
    /* Set state. */
    state = window_checkboxState( wid, str );
    pilot_weapSetMode( player.p, info_eq_weaps.weapons, state );
+
+   /* Check to see if they are all fire groups. */
+   for (i=0; i<PILOT_WEAPON_SETS; i++)
+      if (!pilot_weapSetModeCheck( player.p, i ))
+         break;
+
+   /* Not able to set them all to fire groups. */
+   if (i >= PILOT_WEAPON_SETS) {
+      dialogue_alert( "You can not set all your weapon sets to fire groups!" );
+      pilot_weapSetMode( player.p, info_eq_weaps.weapons, 0 );
+      window_checkboxSet( wid, str, 0 );
+   }
+
+   /* Set default if needs updating. */
+   pilot_weaponSetDefault( player.p );
+}
+
+
+/**
+ * @brief Sets the inrange property.
+ */
+static void weapons_inrange( unsigned int wid, char *str )
+{
+   int state;
+
+   /* Set state. */
+   state = window_checkboxState( wid, str );
+   pilot_weapSetInrange( player.p, info_eq_weaps.weapons, state );
 }
 
 

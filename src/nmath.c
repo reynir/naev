@@ -9,7 +9,7 @@
  */
 
 #include "nmath.h"
-
+#include "rng.h"
 #include "naev.h"
 
 #include <math.h>
@@ -69,3 +69,23 @@ double min3( double v1, double v2, double v3 )
    return(min);
 }
 
+/**
+ *  @brief Randomly sorts an array with the Fisher-Yates shuffle.
+ *
+ *    @param array Array to be sorted.
+ *    @param n Number of elements in the array.
+ *    @return Randomly-ordered array.
+ */
+char** arrayShuffle( char** array, int n)
+{
+   char* tmp;
+   int k;
+
+   while (n > 1) {
+      k = RNG(0, n);
+      tmp = array[--n];
+      array[n] = array[k];
+      array[k] = tmp;
+   }
+   return array;
+}

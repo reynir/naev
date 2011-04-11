@@ -1041,12 +1041,10 @@ static void pilot_dead( Pilot* p, unsigned int killer )
    p->timer[1] = 0.; /* explosion timer */
 
    /* flag cleanup - fixes some issues */
-   if (pilot_isFlag(p,PILOT_HYP_PREP))
-      pilot_rmFlag(p,PILOT_HYP_PREP);
-   if (pilot_isFlag(p,PILOT_HYP_BEGIN))
-      pilot_rmFlag(p,PILOT_HYP_BEGIN);
-   if (pilot_isFlag(p,PILOT_HYPERSPACE))
-      pilot_rmFlag(p,PILOT_HYPERSPACE);
+   pilot_rmFlag(p,PILOT_HYP_PREP);
+   pilot_rmFlag(p,PILOT_HYP_BEGIN);
+   pilot_rmFlag(p,PILOT_HYP_BRAKE);
+   pilot_rmFlag(p,PILOT_HYPERSPACE);
 
    /* Pilot must die before setting death flag and probably messing with other flags. */
    if (killer > 0) {
@@ -1498,7 +1496,7 @@ static void pilot_hyperspace( Pilot* p, double dt )
 {
    StarSystem *sys;
    double a, diff;
-   JumpPoint *jp;
+   int can_hyp;
 
    /* pilot is actually in hyperspace */
    if (pilot_isFlag(p, PILOT_HYPERSPACE)) {
@@ -1531,19 +1529,31 @@ static void pilot_hyperspace( Pilot* p, double dt )
    /* engines getting ready for the jump */
    else if (pilot_isFlag(p, PILOT_HYP_BEGIN)) {
 
-      if (p->ptimer < 0.) { /* engines ready */
-         p->ptimer = HYPERSPACE_FLY_DELAY;
-         pilot_setFlag(p, PILOT_HYPERSPACE);
-         if (p->id == PLAYER_ID) {
-            p->timer[0] = -1.;
+      /* Make sure still within range. */
+      can_hyp = space_canHyperspace( p );
+      if (!can_hyp) {
+         pilot_hyperspaceAbort( p );
+
+         if (p == player.p) {
+            if (!player_isFlag(PLAYER_AUTONAV))
+               player_message( "\erStrayed too far from jump point: jump aborted." );
+         }
+      }
+      else {
+         if (p->ptimer < 0.) { /* engines ready */
+            p->ptimer = HYPERSPACE_FLY_DELAY;
+            pilot_setFlag(p, PILOT_HYPERSPACE);
+            if (p->id == PLAYER_ID) {
+               p->timer[0] = -1.;
+            }
          }
       }
    }
    /* pilot is getting ready for hyperspace */
    else {
       /* Make sure still within range. */
-      jp = &cur_system->jumps[ p->nav_hyperspace ];
-      if (!space_canHyperspace( p )) {
+      can_hyp = space_canHyperspace( p );
+      if (!can_hyp) {
          pilot_hyperspaceAbort( p );
 
          if (p == player.p) {
@@ -1554,18 +1564,18 @@ static void pilot_hyperspace( Pilot* p, double dt )
       else {
 
          /* brake */
-         if (VMOD(p->solid->vel) > MIN_VEL_ERR) {
+         if (!pilot_isFlag(p, PILOT_HYP_BRAKE) && (VMOD(p->solid->vel) > MIN_VEL_ERR)) {
             diff = pilot_face( p, VANGLE(p->solid->vel) + M_PI );
 
             if (ABS(diff) < MAX_DIR_ERR)
                pilot_setThrust( p, 1. );
             else
                pilot_setThrust( p, 0. );
-
          }
          /* face target */
          else {
-
+            /* Done braking. */
+            pilot_setFlag( p, PILOT_HYP_BRAKE);
             pilot_setThrust( p, 0. );
 
             /* Face system headed to. */
@@ -1600,17 +1610,19 @@ static void pilot_hyperspace( Pilot* p, double dt )
  */
 void pilot_hyperspaceAbort( Pilot* p )
 {
-   if (!pilot_isFlag(p, PILOT_HYPERSPACE)) {
-      if (pilot_isFlag(p, PILOT_HYP_BEGIN)) {
-         /* Player plays sound. */
-         if (p->id == PLAYER_ID) {
-            player_soundStop();
-            player_soundPlay( snd_hypPowDown, 1 );
-         }
+   if (pilot_isFlag(p, PILOT_HYPERSPACE))
+      return;
+
+   if (pilot_isFlag(p, PILOT_HYP_BEGIN)) {
+      /* Player plays sound. */
+      if (p->id == PLAYER_ID) {
+         player_soundStop();
+         player_soundPlay( snd_hypPowDown, 1 );
       }
-      pilot_rmFlag(p, PILOT_HYP_BEGIN);
-      pilot_rmFlag(p, PILOT_HYP_PREP);
    }
+   pilot_rmFlag(p, PILOT_HYP_BEGIN);
+   pilot_rmFlag(p, PILOT_HYP_BRAKE);
+   pilot_rmFlag(p, PILOT_HYP_PREP);
 }
 
 
